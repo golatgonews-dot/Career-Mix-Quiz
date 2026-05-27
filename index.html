@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is Your Career Mix?</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --analyst: #6B4F9E;
+    --creator: #E8A87C;
+    --leader: #C0392B;
+    --strategist: #E74C6F;
+    --entrepreneur: #A0522D;
+    --innovator: #F4C842;
+    --specialist: #2471A3;
+    --bg: #F7F4EF;
+    --ink: #1A1A2E;
+    --muted: #6B6B7B;
+    --card: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── INTRO SCREEN ── */
+  #intro {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    background: var(--ink);
+    color: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #intro::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(107,79,158,0.4) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 70%, rgba(232,168,124,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 60% 20%, rgba(231,76,111,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .mosaic {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 320px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mosaic-tile {
+    border-radius: 4px;
+    opacity: 0;
+    animation: fadeIn 0.4s forwards;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  #intro h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  #intro p {
+    font-size: 1.05rem;
+    color: rgba(247,244,239,0.75);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-start {
+    background: var(--bg);
+    color: var(--ink);
+    border: none;
+    padding: 1rem 2.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz {
+    display: none;
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--card);
+    min-height: 100vh;
+  }
+
+  /* Top brand strip */
+  .quiz-topstrip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 1rem;
+    background: var(--ink);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .quiz-brand {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .quiz-type-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--strategist);
+    border: 1px solid var(--strategist);
+    border-radius: 50px;
+    padding: 0.18rem 0.6rem;
+  }
+
+  /* Rainbow gradient divider */
+  .rainbow-bar {
+    height: 3px;
+    background: linear-gradient(90deg,
+      #6B4F9E, #2471A3, #16A085, #F4C842, #E8A87C, #E74C6F, #C0392B);
+  }
+
+  /* Numbered bubble progress */
+  .bubble-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.6rem 1rem;
+    background: #F0EDE8;
+    border-bottom: 1px solid #E0DDD8;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bubble-progress::-webkit-scrollbar { display: none; }
+
+  .q-bubble {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    cursor: default;
+    transition: all 0.2s;
+    background: #D8D4CE;
+    color: var(--muted);
+  }
+
+  .q-bubble.answered {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .q-bubble.current {
+    background: var(--strategist);
+    color: #fff;
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(231,76,111,0.4);
+  }
+
+  /* Question meta row: "QUESTION X OF 20 ··· CATEGORY" */
+  .q-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 1rem 0.3rem;
+  }
+
+  .q-counter {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .q-category {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--strategist);
+  }
+
+  /* Thin animated progress bar */
+  .progress-bar-wrap {
+    background: #E8E4DC;
+    height: 3px;
+    margin: 0 1rem 0.55rem;
+    border-radius: 50px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--analyst), var(--strategist));
+    border-radius: 50px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question body */
+  .q-framing {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--analyst);
+    margin: 0 1rem 0.25rem;
+    line-height: 1.4;
+  }
+
+  .q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.05rem, 3vw, 1.25rem);
+    line-height: 1.3;
+    margin: 0 1rem 0.2rem;
+    color: var(--ink);
+  }
+
+  .q-instruction {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    margin: 0 1rem 0.55rem;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0 1rem;
+  }
+
+  .option {
+    background: #F7F4EF;
+    border: 1.5px solid #E0DDD8;
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-size: 0.86rem;
+    line-height: 1.4;
+    color: var(--ink);
+    text-align: left;
+  }
+
+  .option:hover { border-color: var(--analyst); background: rgba(107,79,158,0.04); }
+  .option.selected { border-color: var(--analyst); background: rgba(107,79,158,0.07); }
+
+  .option-letter {
+    font-weight: 800;
+    font-size: 0.7rem;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .option.selected .option-letter {
+    background: var(--strategist);
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem 0.75rem;
+  }
+
+  .btn-nav {
+    border: none;
+    padding: 0.55rem 1.4rem;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.03em;
+  }
+
+  .btn-back { background: transparent; color: var(--muted); }
+  .btn-back:hover { color: var(--ink); }
+
+  .btn-next { background: var(--ink); color: var(--bg); }
+  .btn-next:hover { background: var(--strategist); }
+  .btn-next:disabled { background: #CCC; cursor: not-allowed; }
+
+  /* ── LEGEND ── */
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    background: var(--card);
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .legend-icon { font-size: 1.15rem; flex-shrink: 0; margin-top: 1px; }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .legend-name { font-size: 0.82rem; font-weight: 600; line-height: 1.2; }
+  .legend-def  { font-size: 0.75rem; color: var(--muted); line-height: 1.4; margin-top: 0.15rem; }
+
+  .btn-back { background: transparent; color: var(--muted); }
+  .btn-back:hover { color: var(--ink); }
+
+  .btn-next {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .btn-next:hover { background: var(--analyst); transform: translateY(-2px); }
+  .btn-next:disabled { background: #CCC; cursor: not-allowed; transform: none; }
+
+  /* ── RESULTS SCREEN ── */
+  #results {
+    display: none;
+    max-width: 700px;
+    margin: 0 auto;
+    padding-bottom: 4rem;
+    background: var(--bg);
+  }
+
+  /* Hero results card */
+  .results-hero {
+    padding: 1.75rem 1.25rem 1.5rem;
+    background: var(--ink);
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .results-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 40%, rgba(107,79,158,0.5) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 75% 60%, rgba(231,76,111,0.4) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .results-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .results-headline {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .results-sentence {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.78);
+    max-width: 480px;
+    margin: 0 auto 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .results-modifiers-hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .modifier-tag-hero {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    padding: 0.28rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* Content sections */
+  .results-body { padding: 1.25rem; }
+
+  /* Zone headers */
+  .zone-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 1.25rem 0 0.75rem;
+  }
+
+  .zone-header:first-child { margin-top: 0; }
+
+  .zone-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+
+  .zone-rule {
+    flex: 1;
+    height: 1px;
+    background: #E0DDD8;
+  }
+
+  .zone-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin: -0.4rem 0 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* Implication items (prescriptive, not observational) */
+  .implication-item {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid #F0EDE8;
+  }
+
+  .implication-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .implication-dot {
+    flex-shrink: 0;
+    margin-top: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .implication-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  .implication-text strong {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.15rem;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  /* Top-3 bars (always visible) */
+  .top-bars { margin-bottom: 1.25rem; }
+
+  .mix-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .score-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 36px;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .score-label { font-size: 0.84rem; font-weight: 500; }
+
+  .bar-track {
+    background: #E8E4DC;
+    border-radius: 50px;
+    height: 9px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0%;
+  }
+
+  .score-pct { font-size: 0.78rem; color: var(--muted); text-align: right; }
+
+  /* Collapsible drawer */
+  .drawer {
+    background: var(--card);
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .drawer-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: left;
+  }
+
+  .drawer-toggle:hover { background: rgba(0,0,0,0.02); }
+
+  .drawer-chevron {
+    font-size: 0.75rem;
+    transition: transform 0.25s;
+    color: var(--muted);
+  }
+
+  .drawer.open .drawer-chevron { transform: rotate(180deg); }
+
+  .drawer-body {
+    display: none;
+    padding: 0 1rem 1rem;
+    border-top: 1px solid #F0EDE8;
+  }
+
+  .drawer.open .drawer-body { display: block; }
+
+  /* Insights inside drawer */
+  .insight-item {
+    display: flex;
+    gap: 0.65rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--muted);
+    padding-top: 0.8rem;
+    border-top: 1px solid #F0EDE8;
+  }
+
+  .insight-item:first-child { border-top: none; padding-top: 0; }
+  .insight-dot { flex-shrink: 0; margin-top: 6px; width: 7px; height: 7px; border-radius: 50%; }
+
+  /* Archetype cards inside drawer */
+  .archetype-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #F0EDE8;
+  }
+
+  .archetype-card:last-child { border-bottom: none; }
+  .archetype-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .archetype-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+  .archetype-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; margin-top: 0.15rem; }
+  .arch-color-bar { width: 4px; border-radius: 4px; flex-shrink: 0; align-self: stretch; }
+
+  /* Legend inside drawer */
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+    padding-top: 0.5rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #F7F4EF;
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .legend-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .legend-dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .legend-name { font-size: 0.78rem; font-weight: 600; line-height: 1.2; }
+  .legend-def  { font-size: 0.7rem; color: var(--muted); line-height: 1.35; margin-top: 0.1rem; }
+
+  .btn-retake {
+    display: block;
+    width: 100%;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    padding: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+  .btn-retake:hover { background: var(--strategist); }
+
+  .section-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+
+  /* staggered option animation */
+  .option {
+    opacity: 0;
+    transform: translateX(-8px);
+    animation: slideIn 0.3s forwards;
+    animation-fill-mode: forwards;
+  }
+  @keyframes slideIn { to { opacity: 1; transform: none; } }
+
+  /* Ensure selected state is always explicit, never inherited from animation */
+  .option:not(.selected) { border-color: #E0DDD8 !important; background: #F7F4EF !important; }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="mosaic" id="mosaic"></div>
+  <h1>What Is Your<br><em>Career Mix?</em></h1>
+  <p>20 questions. No right answers. Discover your unique blend of Analyst, Creator, Leader, Strategist, Entrepreneur, Innovator, and Specialist.</p>
+  <button class="btn-start" onclick="startQuiz()">Take the Quiz →</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz">
+
+  <!-- ── TOP STRIP ── -->
+  <div class="quiz-topstrip">
+    <span class="quiz-brand">CAREER MIX</span>
+    <span class="quiz-type-badge">● CAREER QUIZ</span>
+  </div>
+
+  <!-- ── RAINBOW DIVIDER ── -->
+  <div class="rainbow-bar"></div>
+
+  <!-- ── NUMBERED BUBBLE PROGRESS ── -->
+  <div class="bubble-progress" id="bubbleProgress"></div>
+
+  <!-- ── QUESTION META ROW ── -->
+  <div class="q-meta-row">
+    <span class="q-counter" id="qCounter"></span>
+    <span class="q-category" id="qCategory"></span>
+  </div>
+
+  <!-- ── THIN GRADIENT BAR ── -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+
+  <!-- ── QUESTION BODY ── -->
+  <div class="q-framing" id="qFraming"></div>
+  <div class="q-text" id="qText"></div>
+  <div class="options" id="optionsWrap"></div>
+
+  <div class="nav-row">
+    <button class="btn-nav btn-back" id="btnBack" onclick="goBack()">← Back</button>
+    <button class="btn-nav btn-next" id="btnNext" onclick="goNext()" disabled>Next →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+  <div id="resultsHero"></div>
+  <div class="results-body" id="resultsBody"></div>
+</div>
+
+<script>
+// Dimensions: analyst, creator, leader, strategist, entrepreneur, innovator, specialist
+// Modifiers: traditional, nonLinear, portfolio, multiPassionate, systemsFocused, ideaFocused, peopleFocused
+
+const questions = [
+  {
+    category: "🧠 Work Style",
+    framing: "Think about how you naturally kick off a new project or assignment.",
+    text: "When starting a new project, what do you do first?",
+    options: [
+      { label: "Gather data and research until I feel informed", scores: { analyst: 3 } },
+      { label: "Sketch ideas or brainstorm freely", scores: { creator: 3 } },
+      { label: "Map out who needs to be involved and aligned", scores: { leader: 2 } },
+      { label: "Define the goal and work backward from success", scores: { strategist: 3 } },
+    ]
+  },
+  {
+    category: "⚡ What Energizes You",
+    framing: "Think about a moment at work when you felt fully alive and in your element.",
+    text: "Your most satisfying work moments happen when you're…",
+    options: [
+      { label: "Cracking a puzzle that had no clear answer", scores: { analyst: 2, innovator: 1 } },
+      { label: "Making something that didn't exist before", scores: { creator: 3, innovator: 1 } },
+      { label: "Watching a team hit a goal you set together", scores: { leader: 3 } },
+      { label: "Turning a rough idea into a winning plan", scores: { strategist: 2, entrepreneur: 1 } },
+    ]
+  },
+  {
+    category: "⚖️ Decision-Making",
+    framing: "Think about how you actually behave when a real decision is on the line — not how you think you should.",
+    text: "How do you prefer to make decisions?",
+    options: [
+      { label: "Methodically — I want evidence before I commit", scores: { analyst: 3, systemsFocused: 1 } },
+      { label: "Intuitively — I sense the right answer and act", scores: { creator: 1, entrepreneur: 2 } },
+      { label: "Collaboratively — I check in with others first", scores: { leader: 2, peopleFocused: 2 } },
+      { label: "Strategically — I weigh long-term trade-offs", scores: { strategist: 3 } },
+    ]
+  },
+  {
+    category: "🔧 Problem Solving",
+    framing: "Think about what you instinctively reach for when something at work isn't working.",
+    text: "When you encounter a broken process at work, your instinct is to…",
+    options: [
+      { label: "Diagnose the root cause thoroughly before touching anything", scores: { analyst: 3 } },
+      { label: "Reimagine it from scratch with a completely fresh approach", scores: { creator: 2, innovator: 2 } },
+      { label: "Apply what I know works — I've solved this kind before", scores: { specialist: 3 } },
+      { label: "Build a new system that prevents the problem from recurring", scores: { entrepreneur: 2, systemsFocused: 2 } },
+    ]
+  },
+  {
+    category: "🎲 Risk Tolerance",
+    framing: "Think about your honest relationship with uncertainty — at work and in your career overall.",
+    text: "Which of these best describes your relationship with risk?",
+    options: [
+      { label: "I minimize it with careful analysis and planning", scores: { analyst: 2, specialist: 1 } },
+      { label: "I embrace it when I'm excited about an idea", scores: { creator: 1, innovator: 2, entrepreneur: 1 } },
+      { label: "I manage it by building the right team and trust", scores: { leader: 2 } },
+      { label: "I calculate it — I take smart bets, not reckless ones", scores: { strategist: 2, entrepreneur: 2 } },
+    ]
+  },
+  {
+    category: "🎓 Depth vs. Breadth",
+    framing: "Think about whether you'd rather be known for one deep expertise or a wide range of knowledge.",
+    text: "How do you feel about having a defined area of deep expertise?",
+    options: [
+      { label: "That's my goal — I want to be the best at one thing", scores: { specialist: 3, traditional: 1 } },
+      { label: "I prefer breadth — I get bored going too deep in one lane", scores: { creator: 1, multiPassionate: 2 } },
+      { label: "I like depth in a few key areas, not just one", scores: { analyst: 1, strategist: 1 } },
+      { label: "Expertise matters, but I value adaptability more", scores: { entrepreneur: 1, innovator: 1, nonLinear: 1 } },
+    ]
+  },
+  {
+    category: "🗺️ Career Path Shape",
+    framing: "Think about the overall shape you want your career to take — not just your next role, but the whole arc.",
+    text: "What does your ideal career path look like?",
+    options: [
+      { label: "A clear ladder with defined milestones and progressions", scores: { traditional: 3, leader: 1 } },
+      { label: "A winding path that follows curiosity and opportunity", scores: { nonLinear: 3, creator: 1 } },
+      { label: "Multiple simultaneous projects or roles at once", scores: { portfolio: 3, multiPassionate: 1 } },
+      { label: "Building something — a function, company, or movement", scores: { entrepreneur: 3 } },
+    ]
+  },
+  {
+    category: "📣 Communication & Influence",
+    framing: "Think about what you're most concerned with when you share your work with others.",
+    text: "When presenting your work, what matters most to you?",
+    options: [
+      { label: "Accuracy — my conclusions are airtight", scores: { analyst: 3 } },
+      { label: "Impact — it sparks something in the audience", scores: { creator: 2, ideaFocused: 1 } },
+      { label: "Buy-in — the room is aligned and energized", scores: { leader: 2 } },
+      { label: "Clarity — the path forward is crystal clear", scores: { strategist: 3 } },
+    ]
+  },
+  {
+    category: "🪞 How Others See You",
+    framing: "Think about the reputation you've actually built — what do colleagues rely on you for?",
+    text: "Your colleagues would most likely describe you as…",
+    options: [
+      { label: "The one who always has receipts and data", scores: { analyst: 3 } },
+      { label: "The one who sees angles no one else does", scores: { innovator: 2, creator: 1 } },
+      { label: "The one who holds the team together", scores: { leader: 3, peopleFocused: 2 } },
+      { label: "The one who turns ambiguity into action", scores: { strategist: 2, entrepreneur: 1 } },
+    ]
+  },
+  {
+    category: "👥 People & Management",
+    framing: "Think about how you feel about developing other people as a core part of your job.",
+    text: "How do you feel about managing and developing other people?",
+    options: [
+      { label: "It's one of the most fulfilling parts of my career", scores: { leader: 3, peopleFocused: 3 } },
+      { label: "I enjoy mentoring but prefer doing the actual work", scores: { specialist: 1, analyst: 1 } },
+      { label: "I'd rather build systems that enable people than manage them", scores: { systemsFocused: 2, strategist: 1 } },
+      { label: "I like building a team around a vision I'm executing", scores: { entrepreneur: 2, leader: 1 } },
+    ]
+  },
+  {
+    category: "🏗️ Work Environment",
+    framing: "Think about the physical and social conditions where you personally do your sharpest thinking.",
+    text: "Which environment helps you do your best thinking?",
+    options: [
+      { label: "Quiet, structured, with access to data and tools", scores: { analyst: 2, specialist: 1 } },
+      { label: "Open-ended, stimulating, with room to explore", scores: { creator: 2, innovator: 2, ideaFocused: 1 } },
+      { label: "Collaborative, energetic, with smart people around", scores: { leader: 1, peopleFocused: 2 } },
+      { label: "High-stakes, fast-moving, with real decisions on the line", scores: { strategist: 2, entrepreneur: 2 } },
+    ]
+  },
+  {
+    category: "🔍 Problem Approach",
+    framing: "Think about how you approach something genuinely new — a situation with no obvious playbook.",
+    text: "How do you typically approach a problem you've never seen before?",
+    options: [
+      { label: "Draw on my deep expertise — I pattern-match to what I know cold", scores: { specialist: 3 } },
+      { label: "Brainstorm wildly, then test the most interesting idea fast", scores: { innovator: 3, creator: 1 } },
+      { label: "Run multiple workstreams simultaneously and see what sticks", scores: { portfolio: 3, entrepreneur: 1 } },
+      { label: "Frame it strategically and work backward from the desired outcome", scores: { strategist: 3 } },
+    ]
+  },
+  {
+    category: "📄 Output & Deliverables",
+    framing: "Think about the kind of work product that makes you feel most proud when it's finished.",
+    text: "Which of these work artifacts do you most enjoy creating?",
+    options: [
+      { label: "A prototype, experiment, or proof of concept no one's tried before", scores: { innovator: 3, creator: 1 } },
+      { label: "A team charter, culture doc, or people development plan", scores: { leader: 3, peopleFocused: 1 } },
+      { label: "A business plan, product roadmap, or go-to-market launch plan", scores: { entrepreneur: 3 } },
+      { label: "A reference guide, framework, or methodology others will rely on", scores: { specialist: 3, systemsFocused: 1 } },
+    ]
+  },
+  {
+    category: "🏢 Org Context",
+    framing: "Think about the organizational context where you feel most effective and energized.",
+    text: "How do you feel about working within established organizations vs. building from scratch?",
+    options: [
+      { label: "I thrive inside institutions — I improve what exists", scores: { traditional: 2, analyst: 1, strategist: 1 } },
+      { label: "I prefer building — blank slates energize me", scores: { entrepreneur: 3, nonLinear: 1 } },
+      { label: "I like being an intrapreneur — entrepreneur inside a company", scores: { entrepreneur: 2, innovator: 1 } },
+      { label: "It depends on the mission, not the structure", scores: { strategist: 1, multiPassionate: 1 } },
+    ]
+  },
+  {
+    category: "🌅 Long-Term Vision",
+    framing: "Think about the version of your career that would make you feel most fulfilled looking back.",
+    text: "When you think about your career at its best, it looks like…",
+    options: [
+      { label: "Going deep — becoming the definitive expert in my domain", scores: { specialist: 3 } },
+      { label: "Going wide — touching many fields and disciplines", scores: { multiPassionate: 3, nonLinear: 1 } },
+      { label: "Going up — leading increasingly large teams or organizations", scores: { leader: 3, traditional: 1 } },
+      { label: "Going out — building something that carries my name", scores: { entrepreneur: 2, creator: 1 } },
+    ]
+  },
+  {
+    category: "🌐 Curiosity & Interests",
+    framing: "Think about how often your mind wanders into fields outside your current lane.",
+    text: "How often do you find yourself drawn to new ideas or industries outside your current work?",
+    options: [
+      { label: "Constantly — and I'm usually running several parallel interests at once", scores: { portfolio: 3, multiPassionate: 2 } },
+      { label: "Often — new ideas are where I do my best thinking", scores: { innovator: 3, ideaFocused: 1 } },
+      { label: "Occasionally — when it sharpens what I already know deeply", scores: { specialist: 3 } },
+      { label: "Rarely — I prefer to go further in my lane, not wider", scores: { traditional: 2, specialist: 1 } },
+    ]
+  },
+  {
+    category: "⚙️ Systems & Structure",
+    framing: "Think about your relationship with processes, frameworks, and structured ways of working.",
+    text: "What role do systems and structures play in how you work?",
+    options: [
+      { label: "Essential — I build and optimize systems constantly", scores: { systemsFocused: 3, analyst: 1 } },
+      { label: "Useful scaffolding — but I break them when needed", scores: { innovator: 1, entrepreneur: 1 } },
+      { label: "A means to an end — I follow them if they serve the goal", scores: { strategist: 2 } },
+      { label: "Sometimes limiting — I prefer organic, people-driven work", scores: { creator: 1, peopleFocused: 1 } },
+    ]
+  },
+  {
+    category: "🌫️ Handling Ambiguity",
+    framing: "Think about how you genuinely react when direction is unclear and the path forward isn't defined.",
+    text: "How do you feel about ambiguity at work?",
+    options: [
+      { label: "It frustrates me — I want clear data and direction", scores: { analyst: 2, specialist: 1 } },
+      { label: "It excites me — that's where the opportunities live", scores: { entrepreneur: 2, innovator: 2 } },
+      { label: "It's manageable when I have the right team around me", scores: { leader: 2, peopleFocused: 1 } },
+      { label: "It's my specialty — I create structure from chaos", scores: { strategist: 3 } },
+    ]
+  },
+  {
+    category: "🔥 Core Motivation",
+    framing: "Think about what gets you out of bed and into a role — the thing that makes work feel worthwhile.",
+    text: "What motivates you most at work?",
+    options: [
+      { label: "Mastery — I want to be exceptionally good at my craft", scores: { specialist: 2, analyst: 1 } },
+      { label: "Creation — I want to make things that didn't exist", scores: { creator: 3, ideaFocused: 1 } },
+      { label: "Impact on people — I want to improve others' lives or work", scores: { leader: 2, peopleFocused: 2 } },
+      { label: "Scale — I want my ideas to reach far and wide", scores: { strategist: 1, entrepreneur: 2, innovator: 1 } },
+    ]
+  },
+  {
+    category: "🌟 Dream Week",
+    framing: "Think about a perfect week of work — no constraints, no politics. What does it actually look like?",
+    text: "Finally — which of these describes a dream week of work?",
+    options: [
+      { label: "Deep in a complex analysis, finally cracking the code", scores: { analyst: 3 } },
+      { label: "Building and shipping something I'm proud of", scores: { creator: 2, entrepreneur: 1, innovator: 1 } },
+      { label: "Coaching my team through a big challenge and watching them grow", scores: { leader: 3, peopleFocused: 1 } },
+      { label: "In the room where strategy gets made, shaping big decisions", scores: { strategist: 3 } },
+    ]
+  }
+];
+
+const archetypes = {
+  analyst:      { label: "Analyst",      icon: "🔬", color: "#6B4F9E", desc: "You're driven by data, rigor, and truth. You make sense of complexity and turn information into insight. You're most at home when solving problems others can't untangle." },
+  creator:      { label: "Creator",      icon: "✏️", color: "#E8A87C", desc: "You're drawn to making — ideas, content, products, experiences. You see possibilities where others see blank pages, and you have a strong sense of what's original." },
+  leader:       { label: "Leader",       icon: "🧭", color: "#C0392B", desc: "You're energized by people. You build cultures, align teams, and carry others forward. Your highest contribution happens through and with others." },
+  strategist:   { label: "Strategist",   icon: "♟️", color: "#E74C6F", desc: "You're a big-picture thinker who turns ambiguity into direction. You excel at seeing trade-offs, making hard calls, and putting a plan behind a vision." },
+  entrepreneur: { label: "Entrepreneur", icon: "🚀", color: "#A0522D", desc: "You're a builder. Whether inside an organization or out, you're wired to launch, iterate, and scale. You're comfortable with risk and energized by ownership." },
+  innovator:    { label: "Innovator",    icon: "💡", color: "#F4C842", desc: "You're relentlessly curious and future-focused. You connect dots across disciplines, challenge assumptions, and push toward what's next before others even see the question." },
+  specialist:   { label: "Specialist",   icon: "🎯", color: "#2471A3", desc: "You go deep, not just wide. You find meaning in mastery and are most valuable as a definitive expert. Your credibility is built on what you know better than almost anyone." },
+};
+
+const modifiers = {
+  traditional:    { label: "Traditional Path", icon: "🏛️" },
+  nonLinear:      { label: "Non-Linear Path",  icon: "〰️" },
+  portfolio:      { label: "Portfolio Career",  icon: "📂" },
+  multiPassionate:{ label: "Multi-Passionate",  icon: "🌈" },
+  systemsFocused: { label: "Systems-Focused",   icon: "⚙️" },
+  ideaFocused:    { label: "Ideas-Focused",     icon: "🔮" },
+  peopleFocused:  { label: "People-Focused",    icon: "🤝" },
+};
+
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+
+// Build mosaic tiles for intro
+function buildMosaic() {
+  const colors = ['#6B4F9E','#E8A87C','#C0392B','#E74C6F','#A0522D','#F4C842','#2471A3','#8E44AD','#16A085'];
+  const sizes = [[36,36],[48,28],[28,48],[40,40],[32,56],[56,32],[44,44]];
+  const wrap = document.getElementById('mosaic');
+  for(let i=0;i<28;i++){
+    const tile = document.createElement('div');
+    tile.className = 'mosaic-tile';
+    const sz = sizes[i%sizes.length];
+    tile.style.cssText = `width:${sz[0]}px;height:${sz[1]}px;background:${colors[i%colors.length]};opacity:0.85;animation-delay:${i*0.04}s`;
+    wrap.appendChild(tile);
+  }
+}
+
+function startQuiz() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+
+  // Scroll quiz back to top so framing line is always visible
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // Numbered bubbles
+  const bubbleWrap = document.getElementById('bubbleProgress');
+  bubbleWrap.innerHTML = '';
+  questions.forEach((_, i) => {
+    const b = document.createElement('div');
+    b.className = 'q-bubble' +
+      (i === currentQ ? ' current' : answers[i] !== null ? ' answered' : '');
+    b.textContent = i + 1;
+    bubbleWrap.appendChild(b);
+  });
+
+  document.getElementById('qCounter').textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('qCategory').textContent = q.category;
+  document.getElementById('qFraming').textContent = q.framing;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('progressFill').style.width = `${((currentQ)/questions.length)*100}%`;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+
+  // Snapshot the current answer index before rendering so it can't drift
+  const savedAnswer = answers[currentQ];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    // Only mark selected if this question genuinely has a saved answer
+    const isSelected = savedAnswer !== null && savedAnswer === i;
+    btn.className = 'option' + (isSelected ? ' selected' : '');
+    // Force animation reset by briefly removing and re-adding the element
+    btn.style.animationDelay = `${i * 0.07}s`;
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt.label}</span>`;
+    btn.onclick = () => selectOption(i);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('btnBack').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+  document.getElementById('btnNext').disabled = savedAnswer === null;
+  document.getElementById('btnNext').textContent = currentQ === questions.length - 1 ? 'See Results →' : 'Next →';
+}
+
+function selectOption(i) {
+  answers[currentQ] = i;
+  document.querySelectorAll('.option').forEach((el,idx) => {
+    el.classList.toggle('selected', idx===i);
+  });
+  document.getElementById('btnNext').disabled = false;
+
+  // Auto-advance (except last question)
+  if(currentQ < questions.length - 1) {
+    setTimeout(() => goNext(), 520);
+  }
+}
+
+function goNext() {
+  if(answers[currentQ]===null) return;
+  if(currentQ<questions.length-1){
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function goBack() {
+  if(currentQ>0){ currentQ--; renderQuestion(); }
+}
+
+const archetypeLegendDefs = {
+  analyst:      "Data-driven truth-seeker. Turns information into insight and thrives on solving complex problems.",
+  creator:      "Maker of things. Generates ideas, content, and experiences that didn't exist before.",
+  leader:       "People-first. Builds teams, drives culture, and achieves goals through and with others.",
+  strategist:   "Big-picture thinker. Converts ambiguity into a clear direction and actionable plan.",
+  entrepreneur: "Builder and launcher. Wired to start things, take ownership, and scale what works.",
+  innovator:    "Future-focused connector. Challenges assumptions and pushes toward what's next.",
+  specialist:   "Deep-domain expert. Finds meaning in mastery and builds credibility through unmatched knowledge.",
+};
+
+const modifierLegendDefs = {
+  traditional:    "Prefers a structured career ladder with clear titles, progressions, and institutional belonging.",
+  nonLinear:      "Follows curiosity across roles and industries rather than a prescribed path upward.",
+  portfolio:      "Holds multiple simultaneous projects, roles, or clients rather than one linear track.",
+  multiPassionate:"Has broad, hard-to-contain interests across many fields — breadth is a strength, not a distraction.",
+  systemsFocused: "Builds and optimizes processes, workflows, and structures that make organizations scale.",
+  ideaFocused:    "Energized by concepts, possibilities, and original thinking — ideas are the primary currency.",
+  peopleFocused:  "Measures success through human impact — relationships, development, and collective growth.",
+};
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  // ── FIX #3: Dynamic normalization ──
+  // Compute each archetype's actual max possible score across all questions
+  const archetypeKeys = Object.keys({ analyst:0, creator:0, leader:0, strategist:0, entrepreneur:0, innovator:0, specialist:0 });
+  const modKeys2 = Object.keys({ traditional:0, nonLinear:0, portfolio:0, multiPassionate:0, systemsFocused:0, ideaFocused:0, peopleFocused:0 });
+
+  const maxPerArchetype = {};
+  archetypeKeys.forEach(k => maxPerArchetype[k] = 0);
+  const maxPerMod = {};
+  modKeys2.forEach(k => maxPerMod[k] = 0);
+
+  questions.forEach(q => {
+    // For each archetype, find the highest score any single option gives
+    archetypeKeys.forEach(k => {
+      const best = Math.max(...q.options.map(o => o.scores[k] || 0));
+      maxPerArchetype[k] += best;
+    });
+    modKeys2.forEach(k => {
+      const best = Math.max(...q.options.map(o => o.scores[k] || 0));
+      maxPerMod[k] += best;
+    });
+  });
+
+  // Tally actual scores
+  const scores = {}; archetypeKeys.forEach(k => scores[k] = 0);
+  const modScores = {}; modKeys2.forEach(k => modScores[k] = 0);
+
+  answers.forEach((ansIdx, qIdx) => {
+    if(ansIdx === null) return;
+    const s = questions[qIdx].options[ansIdx].scores;
+    for(const [k,v] of Object.entries(s)){
+      if(k in scores) scores[k] += v;
+      if(k in modScores) modScores[k] += v;
+    }
+  });
+
+  // Normalize against true max
+  const pcts = {};
+  archetypeKeys.forEach(k => {
+    pcts[k] = maxPerArchetype[k] > 0
+      ? Math.round((scores[k] / maxPerArchetype[k]) * 100)
+      : 0;
+  });
+
+  const modPcts = {};
+  modKeys2.forEach(k => {
+    modPcts[k] = maxPerMod[k] > 0
+      ? Math.round((modScores[k] / maxPerMod[k]) * 100)
+      : 0;
+  });
+
+  const ranked = Object.entries(pcts).sort((a,b) => b[1]-a[1]);
+  const [primaryKey, primaryPct] = ranked[0];
+  const [secondKey, secondPct] = ranked[1];
+
+  const activeModifiers = Object.entries(modPcts)
+    .filter(([,v]) => v >= 25)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0,4);
+
+  const pArch = archetypes[primaryKey];
+  const sArch = archetypes[secondKey];
+
+  // ── FIX #4: Headline sentence ──
+  function buildHeadline(primary, secondary, secondPct, mods) {
+    const modLabels = mods.map(([k]) => modifiers[k].label);
+    const modStr = modLabels.length > 0 ? modLabels.slice(0,2).join(' & ') + ' ' : '';
+    const hybridStr = secondPct >= 40 ? ` with a strong ${archetypes[secondary].label} streak` : '';
+    return `${modStr}${archetypes[primary].label}${hybridStr}`;
+  }
+
+  function buildSentence(primary, secondary, secondPct, mods) {
+    const modKeys = mods.map(([k]) => k);
+    const hybrid = secondPct >= 40;
+    const sentences = {
+      'analyst': hybrid
+        ? `You diagnose with data and ${secondary === 'strategist' ? 'turn it into direction' : secondary === 'creator' ? 'present it in ways that land' : 'drive it forward'}. You belong in rooms where the hard questions live.`
+        : `You're the person who figures out what's actually true — then makes sure everyone else knows it.`,
+      'creator': hybrid
+        ? `You make things that didn't exist and ${secondary === 'strategist' ? 'back them with a real plan' : secondary === 'innovator' ? 'push them further than anyone expected' : 'bring others along for the ride'}.`
+        : `You're drawn to blank canvases. Your best work is something no one else would have made.`,
+      'leader': hybrid
+        ? `You build teams and ${secondary === 'strategist' ? 'set the direction they run in' : secondary === 'entrepreneur' ? 'launch things together' : 'develop the people who will go further than you'}.`
+        : `Your highest contribution happens through other people. Culture isn't a perk to you — it's the work.`,
+      'strategist': hybrid
+        ? `You see the long game and ${secondary === 'analyst' ? 'have the receipts to prove it' : secondary === 'entrepreneur' ? 'build toward it relentlessly' : 'bring people into it'}.`
+        : `You turn ambiguity into direction. You're most alive when the stakes are high and the path isn't obvious.`,
+      'entrepreneur': hybrid
+        ? `You build and ${secondary === 'innovator' ? 'push into territory no one has mapped yet' : secondary === 'strategist' ? 'think three moves ahead' : 'bring a team with you'}.`
+        : `You're wired to own something. Whether it's a company or a function, you need to be building.`,
+      'innovator': hybrid
+        ? `You challenge assumptions and ${secondary === 'creator' ? 'make something new from the wreckage' : secondary === 'entrepreneur' ? 'build before the market catches up' : 'bring rigor to the frontier'}.`
+        : `You see what's next before others see the question. Your value is in being early and being right.`,
+      'specialist': hybrid
+        ? `You go deep and ${secondary === 'analyst' ? 'let the data lead the way' : secondary === 'strategist' ? 'apply it with precision' : 'share it generously'}.`
+        : `Mastery is your north star. You want to be the person everyone calls when the question gets hard.`,
+    };
+    let s = sentences[primary] || `You bring a rare and specific combination of strengths. Own it.`;
+    if(modKeys.includes('nonLinear')) s += ' Your non-linear path is the feature, not the bug.';
+    if(modKeys.includes('multiPassionate') && !modKeys.includes('nonLinear')) s += ' Your range of interests is a strength, not a distraction.';
+    return s;
+  }
+
+  const headlineText = buildHeadline(primaryKey, secondKey, secondPct, activeModifiers);
+  const sentenceText = buildSentence(primaryKey, secondKey, secondPct, activeModifiers);
+
+  // ── BUILD HERO ──
+  const hero = document.getElementById('resultsHero');
+  hero.className = 'results-hero';
+  hero.style.setProperty('--primary-color', pArch.color);
+  hero.innerHTML = `
+    <div class="results-eyebrow">Here's what we learned about you</div>
+    <div class="results-headline">${pArch.icon} ${headlineText}</div>
+    <div class="results-sentence">${sentenceText}</div>
+    <div class="results-modifiers-hero">
+      ${activeModifiers.map(([k]) => `<div class="modifier-tag-hero">${modifiers[k].icon} ${modifiers[k].label}</div>`).join('')}
+    </div>`;
+
+  // ── BUILD BODY ──
+  const body = document.getElementById('resultsBody');
+  body.innerHTML = '';
+
+  // ── HUMAN INSIGHT PARAGRAPH ──
+  // Build a flowing paragraph about the person — no labels, no structure
+  const implications = generateImplications(primaryKey, secondKey, activeModifiers, pcts);
+  const hybrid = pcts[secondKey] >= 40;
+
+  function buildNarrative(primary, secondary, mods, impls) {
+    const modKeys = mods.map(([k]) => k);
+    const pLabel = archetypes[primary].label;
+    const sLabel = archetypes[secondary].label;
+
+    // Opening — who they are
+    let para = impls[0] ? impls[0].text : archetypes[primary].desc;
+
+    // Middle — how they work
+    if(modKeys.includes('nonLinear')) {
+      para += ` The through-line in your career isn't a straight line — it's a perspective that only comes from having been in more than one world.`;
+    } else if(modKeys.includes('multiPassionate')) {
+      para += ` Your range of interests isn't a distraction from your work — it's the source of your best thinking.`;
+    } else if(modKeys.includes('systemsFocused')) {
+      para += ` You tend to leave things more organized than you found them — not because you were asked to, but because that's how you think.`;
+    } else if(modKeys.includes('peopleFocused')) {
+      para += ` The work is always personal for you, because the people doing it are.`;
+    } else if(modKeys.includes('portfolio')) {
+      para += ` You're probably better suited to working across multiple things at once than any single role has let you admit.`;
+    }
+
+    // Hybrid note
+    if(hybrid) {
+      para += ` Your ${sLabel} side shows up strongly too — and that combination is rarer than either archetype alone.`;
+    }
+
+    // Close — what to do with it
+    const close = impls[1] ? impls[1].text : `Look for environments where your specific combination of strengths is the point, not a compromise.`;
+    para += ` ${close}`;
+
+    return para;
+  }
+
+  const narrative = buildNarrative(primaryKey, secondKey, activeModifiers, implications);
+
+  const narrativeCard = document.createElement('div');
+  narrativeCard.style.cssText = `
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left: 4px solid ${pArch.color};
+  `;
+  narrativeCard.innerHTML = `
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.55rem;">What Your Answers Say About You</div>
+    <div style="font-size:0.9rem;line-height:1.75;color:var(--ink);">${narrative}</div>`;
+  body.appendChild(narrativeCard);
+
+  // ── TOP 3 BARS — always visible, no label needed ──
+  const barsCard = document.createElement('div');
+  barsCard.style.cssText = 'background:var(--card);border-radius:12px;padding:1rem 1.1rem;margin-bottom:0.75rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);';
+
+  const barsEyebrow = document.createElement('div');
+  barsEyebrow.style.cssText = 'font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.7rem;';
+  barsEyebrow.textContent = 'How You Scored Across All Seven Archetypes';
+  barsCard.appendChild(barsEyebrow);
+
+  ranked.forEach(([key, pct]) => {
+    const arch = archetypes[key];
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <div class="score-label">${arch.icon} ${arch.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="background:${arch.color}" data-pct="${pct}"></div></div>
+      <div class="score-pct">${pct}%</div>`;
+    barsCard.appendChild(row);
+  });
+  body.appendChild(barsCard);
+
+  // ── SINGLE "LEARN MORE" TOGGLE — everything else collapses here ──
+  const learnMore = document.createElement('div');
+  learnMore.className = 'drawer';
+  learnMore.style.marginBottom = '0.75rem';
+
+  const learnToggle = document.createElement('button');
+  learnToggle.className = 'drawer-toggle';
+  learnToggle.innerHTML = `<span>Want to go deeper?</span><span class="drawer-chevron">▼</span>`;
+  learnToggle.onclick = () => learnMore.classList.toggle('open');
+
+  const learnBody = document.createElement('div');
+  learnBody.className = 'drawer-body';
+
+  // Working style notes (if modifiers present)
+  if(activeModifiers.length > 0) {
+    const modHead = document.createElement('div');
+    modHead.style.cssText = 'font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:0.75rem 0 0.5rem;';
+    modHead.textContent = 'Your Working Style';
+    learnBody.appendChild(modHead);
+    activeModifiers.forEach(([key]) => {
+      const m = modifiers[key];
+      const item = document.createElement('div');
+      item.className = 'archetype-card';
+      item.innerHTML = `
+        <div style="font-size:1.3rem;flex-shrink:0">${m.icon}</div>
+        <div>
+          <div class="archetype-name" style="font-size:0.9rem">${m.label}</div>
+          <div class="archetype-desc">${modifierLegendDefs[key]}</div>
+        </div>`;
+      learnBody.appendChild(item);
+    });
+  }
+
+  // Additional recommendations
+  if(implications.length > 2) {
+    const recHead = document.createElement('div');
+    recHead.style.cssText = 'font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:1.1rem 0 0.5rem;';
+    recHead.textContent = 'More on Your Next Role';
+    learnBody.appendChild(recHead);
+    implications.slice(2).forEach(({label: lbl, text}) => {
+      const item = document.createElement('div');
+      item.className = 'implication-item';
+      item.innerHTML = `
+        <div class="implication-dot" style="background:${pArch.color}"></div>
+        <div class="implication-text"><strong>${lbl}</strong>${text}</div>`;
+      learnBody.appendChild(item);
+    });
+  }
+
+  // Archetype reference
+  const archHead = document.createElement('div');
+  archHead.style.cssText = 'font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:1.1rem 0 0.5rem;';
+  archHead.textContent = 'Your Top Archetypes';
+  learnBody.appendChild(archHead);
+  ranked.slice(0,4).forEach(([key]) => {
+    const arch = archetypes[key];
+    const card = document.createElement('div');
+    card.className = 'archetype-card';
+    card.innerHTML = `
+      <div class="arch-color-bar" style="background:${arch.color}"></div>
+      <div class="archetype-icon">${arch.icon}</div>
+      <div>
+        <div class="archetype-name">${arch.label}</div>
+        <div class="archetype-desc">${arch.desc}</div>
+      </div>`;
+    learnBody.appendChild(card);
+  });
+
+  // Glossary — tucked at the very bottom
+  const glossHead = document.createElement('div');
+  glossHead.style.cssText = 'font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:1.1rem 0 0.4rem;';
+  glossHead.textContent = 'What the Terms Mean';
+  learnBody.appendChild(glossHead);
+
+  const ag = document.createElement('div');
+  ag.className = 'legend-grid';
+  for(const [key, arch] of Object.entries(archetypes)) {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<div class="legend-dot" style="background:${arch.color}"></div>
+      <div><div class="legend-name">${arch.icon} ${arch.label}</div>
+      <div class="legend-def">${archetypeLegendDefs[key]}</div></div>`;
+    ag.appendChild(item);
+  }
+  learnBody.appendChild(ag);
+
+  const mg = document.createElement('div');
+  mg.className = 'legend-grid';
+  mg.style.marginTop = '0.5rem';
+  for(const [key, mod] of Object.entries(modifiers)) {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<div class="legend-icon">${mod.icon}</div>
+      <div><div class="legend-name">${mod.label}</div>
+      <div class="legend-def">${modifierLegendDefs[key]}</div></div>`;
+    mg.appendChild(item);
+  }
+  learnBody.appendChild(mg);
+
+  learnMore.appendChild(learnToggle);
+  learnMore.appendChild(learnBody);
+  body.appendChild(learnMore);
+
+  // Retake button
+  const retakeBtn = document.createElement('button');
+  retakeBtn.className = 'btn-retake';
+  retakeBtn.textContent = '↩ Take It Again';
+  retakeBtn.onclick = () => {
+    currentQ = 0;
+    answers = new Array(questions.length).fill(null);
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('resultsHero').innerHTML = '';
+    document.getElementById('resultsBody').innerHTML = '';
+    document.getElementById('intro').style.display = 'flex';
+  };
+  body.appendChild(retakeBtn);
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 120);
+}
+
+function generateImplications(primary, secondary, mods, pcts) {
+  const modKeys = mods.map(m => m[0]);
+  const hybrid = pcts[secondary] >= 40;
+  const implications = [];
+
+  // Where you add the most value
+  const valueMap = {
+    analyst:      'You add the most value in roles where getting the answer right matters more than getting it fast. Research, intelligence, analytics, and strategy functions are natural homes.',
+    creator:      'You add the most value when you own the output. Look for roles where you can put your name on something — a product, a brand, a body of content, a designed experience.',
+    leader:       'You add the most value when you\'re accountable for people, not just work. Director and above roles, team-building mandates, and culture-heavy organizations will bring out your best.',
+    strategist:   'You add the most value in ambiguous, high-stakes environments where the path isn\'t obvious. Senior IC roles, strategy functions, and advisory positions are natural fits.',
+    entrepreneur: 'You add the most value when you have ownership and room to build. Whether that\'s a startup, a new function, or a greenfield initiative inside a large org — you need something to own.',
+    innovator:    'You add the most value at the edges — early-stage work, R&D, product exploration, and any role where the brief is "figure out what\'s next."',
+    specialist:   'You add the most value as a recognized expert. Look for roles where your depth is the point — principal, senior IC, subject matter lead, or internal center of excellence.',
+  };
+  implications.push({ label: 'Where You Add the Most Value', text: valueMap[primary] });
+
+  // What to look for in your next role
+  const nextRoleMap = {
+    analyst:      'Prioritize roles with access to real data, clear problem statements, and decision-makers who actually use research. Avoid orgs that run on gut instinct alone.',
+    creator:      'Prioritize roles with creative latitude and a visible output. Avoid environments where everything goes through heavy approval layers before it sees the light.',
+    leader:       'Prioritize roles with direct reports, cross-functional scope, or explicit culture-building responsibility. Avoid pure IC tracks — they\'ll leave you flat.',
+    strategist:   'Prioritize roles with executive access and a mandate to influence decisions, not just inform them. Avoid execution-only roles with no upstream input.',
+    entrepreneur: 'Prioritize roles with a build mandate — new product, new market, new function. Avoid mature steady-state environments where the system runs itself.',
+    innovator:    'Prioritize orgs with an explicit innovation agenda and tolerance for early failure. Avoid highly process-bound environments that optimize for efficiency over exploration.',
+    specialist:   'Prioritize roles where depth is valued over breadth — where being the best at one thing is the explicit ask. Avoid generalist roles that spread you thin.',
+  };
+  implications.push({ label: 'What to Look for in Your Next Role', text: nextRoleMap[primary] });
+
+  // Hybrid combination insight
+  if(hybrid) {
+    const combos = {
+      'analyst-strategist':   'Your combination of diagnostic rigor and strategic thinking is uncommon and high-value. You can both find the truth and decide what to do with it — a complete package for senior strategy roles.',
+      'analyst-creator':      'You\'re rare: someone who can find the answer and present it compellingly. This combination is powerful in research, content strategy, product, and any role that requires both evidence and narrative.',
+      'creator-innovator':    'You generate and push ideas further than most organizations are ready for. Seek environments that match your pace — startups, innovation labs, or orgs explicitly investing in what\'s next.',
+      'strategist-entrepreneur': 'You think big and build toward it. This is the combination behind successful founders, GMs, and corporate builders. You need both the vision and the mandate to execute.',
+      'leader-strategist':    'You see where things should go and know how to bring people with you. This is an executive-track combination — look for roles where you\'re setting direction, not just following it.',
+      'entrepreneur-innovator': 'You build into uncertainty and push past where others stop. You belong at the frontier — whether that\'s a company, a product category, or a field.',
+      'specialist-analyst':   'You combine deep expertise with rigorous methodology. You\'re the person who doesn\'t just know the domain — you can prove your conclusions hold up.',
+    };
+    const key1 = `${primary}-${secondary}`;
+    const key2 = `${secondary}-${primary}`;
+    const comboText = combos[key1] || combos[key2];
+    if(comboText) implications.push({ label: 'Your Combination Advantage', text: comboText });
+  }
+
+  // Modifier-driven guidance
+  if(modKeys.includes('nonLinear')) implications.push({
+    label: 'Own Your Non-Linear Path',
+    text: 'Stop explaining your career as a series of pivots. Start framing it as a body of perspective no single-track career could produce. Your range is the credential.'
+  });
+  if(modKeys.includes('portfolio')) implications.push({
+    label: 'Consider a Portfolio Model',
+    text: 'You may be better served by multiple simultaneous engagements than one linear role. Consulting, fractional work, board advising, or parallel projects may fit your working style better than a traditional job.'
+  });
+  if(modKeys.includes('systemsFocused')) implications.push({
+    label: 'Seek Orgs That Need Infrastructure',
+    text: 'You build the invisible things that make organizations scale. Look for roles where process design, workflow architecture, or operational infrastructure is a genuine priority — not just a nice-to-have.'
+  });
+  if(modKeys.includes('multiPassionate')) implications.push({
+    label: 'Breadth Is Your Differentiator',
+    text: 'Don\'t specialize into a corner. Look for roles that reward synthesis across domains — strategy, consulting, general management, or cross-functional leadership where range is an asset.'
+  });
+
+  // Hybrid proximity note
+  if(pcts[primary] - pcts[secondary] < 15) implications.push({
+    label: 'You\'re Genuinely Hybrid',
+    text: `Your ${archetypes[primary].label} and ${archetypes[secondary].label} scores are close. Don't let job titles or org charts force you into one lane. Seek roles that can use both.`
+  });
+
+  return implications.slice(0, 5);
+}
+
+buildMosaic();
+</script>
+</body>
+</html>
