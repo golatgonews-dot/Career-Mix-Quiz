@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0049)file:///C:/Users/golat/Downloads/index_fresh.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What Is Your Career Mix?</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="./index_files/css2" rel="stylesheet">
 <style>
   :root {
     --analyst: #6B4F9E;
@@ -319,14 +319,6 @@
     transform: scale(1.15);
     box-shadow: 0 2px 6px rgba(231,76,111,0.4);
   }
-
-  /* Selection ripple flash */
-  @keyframes selectFlash {
-    0%   { background: rgba(231,76,111,0.18); }
-    100% { background: rgba(231,76,111,0.06); }
-  }
-
-  .option.selected { animation: selectFlash 0.3s ease-out forwards; }
 
   /* Share button */
   .btn-share {
@@ -768,17 +760,28 @@
   }
   @keyframes slideIn { to { opacity: 1; transform: none; } }
 
-  /* Ensure selected state is always explicit, never inherited from animation */
-  .option:not(.selected) { border-color: #E0DDD8 !important; background: #F7F4EF !important; }
+  /* Selection flash — separate from slide-in, only on selected */
+  .option.selected {
+    border-color: var(--strategist) !important;
+    background: rgba(231,76,111,0.06) !important;
+    transform: scale(1.012) !important;
+    box-shadow: 0 2px 10px rgba(231,76,111,0.15) !important;
+    /* No animation here — handled by JS class toggle */
+  }
+
+  .option:not(.selected) {
+    border-color: #E0DDD8 !important;
+    background: #F7F4EF !important;
+  }
 </style>
 </head>
 <body>
 
 <!-- RESUME BANNER (shown if saved progress exists) -->
-<div id="resumeBanner" style="display:none;" class="resume-banner">
+<div id="resumeBanner" style="display: flex;" class="resume-banner">
   <div class="resume-banner-text">
     <strong>👋 Welcome back</strong>
-    <span id="resumeText">You were on question —. Pick up where you left off?</span>
+    <span id="resumeText">You were on question 4 of 20 (4 answered). Pick up where you left off?</span>
   </div>
   <div class="resume-actions">
     <button class="btn-resume btn-resume-yes" onclick="resumeQuiz()">Resume</button>
@@ -788,7 +791,7 @@
 
 <!-- INTRO -->
 <div id="intro">
-  <div class="mosaic" id="mosaic"></div>
+  <div class="mosaic" id="mosaic"><div class="mosaic-tile" style="width: 36px; height: 36px; background: rgb(107, 79, 158); opacity: 0.85; animation-delay: 0s;"></div><div class="mosaic-tile" style="width: 48px; height: 28px; background: rgb(232, 168, 124); opacity: 0.85; animation-delay: 0.04s;"></div><div class="mosaic-tile" style="width: 28px; height: 48px; background: rgb(192, 57, 43); opacity: 0.85; animation-delay: 0.08s;"></div><div class="mosaic-tile" style="width: 40px; height: 40px; background: rgb(231, 76, 111); opacity: 0.85; animation-delay: 0.12s;"></div><div class="mosaic-tile" style="width: 32px; height: 56px; background: rgb(160, 82, 45); opacity: 0.85; animation-delay: 0.16s;"></div><div class="mosaic-tile" style="width: 56px; height: 32px; background: rgb(244, 200, 66); opacity: 0.85; animation-delay: 0.2s;"></div><div class="mosaic-tile" style="width: 44px; height: 44px; background: rgb(36, 113, 163); opacity: 0.85; animation-delay: 0.24s;"></div><div class="mosaic-tile" style="width: 36px; height: 36px; background: rgb(142, 68, 173); opacity: 0.85; animation-delay: 0.28s;"></div><div class="mosaic-tile" style="width: 48px; height: 28px; background: rgb(22, 160, 133); opacity: 0.85; animation-delay: 0.32s;"></div><div class="mosaic-tile" style="width: 28px; height: 48px; background: rgb(107, 79, 158); opacity: 0.85; animation-delay: 0.36s;"></div><div class="mosaic-tile" style="width: 40px; height: 40px; background: rgb(232, 168, 124); opacity: 0.85; animation-delay: 0.4s;"></div><div class="mosaic-tile" style="width: 32px; height: 56px; background: rgb(192, 57, 43); opacity: 0.85; animation-delay: 0.44s;"></div><div class="mosaic-tile" style="width: 56px; height: 32px; background: rgb(231, 76, 111); opacity: 0.85; animation-delay: 0.48s;"></div><div class="mosaic-tile" style="width: 44px; height: 44px; background: rgb(160, 82, 45); opacity: 0.85; animation-delay: 0.52s;"></div><div class="mosaic-tile" style="width: 36px; height: 36px; background: rgb(244, 200, 66); opacity: 0.85; animation-delay: 0.56s;"></div><div class="mosaic-tile" style="width: 48px; height: 28px; background: rgb(36, 113, 163); opacity: 0.85; animation-delay: 0.6s;"></div><div class="mosaic-tile" style="width: 28px; height: 48px; background: rgb(142, 68, 173); opacity: 0.85; animation-delay: 0.64s;"></div><div class="mosaic-tile" style="width: 40px; height: 40px; background: rgb(22, 160, 133); opacity: 0.85; animation-delay: 0.68s;"></div><div class="mosaic-tile" style="width: 32px; height: 56px; background: rgb(107, 79, 158); opacity: 0.85; animation-delay: 0.72s;"></div><div class="mosaic-tile" style="width: 56px; height: 32px; background: rgb(232, 168, 124); opacity: 0.85; animation-delay: 0.76s;"></div><div class="mosaic-tile" style="width: 44px; height: 44px; background: rgb(192, 57, 43); opacity: 0.85; animation-delay: 0.8s;"></div><div class="mosaic-tile" style="width: 36px; height: 36px; background: rgb(231, 76, 111); opacity: 0.85; animation-delay: 0.84s;"></div><div class="mosaic-tile" style="width: 48px; height: 28px; background: rgb(160, 82, 45); opacity: 0.85; animation-delay: 0.88s;"></div><div class="mosaic-tile" style="width: 28px; height: 48px; background: rgb(244, 200, 66); opacity: 0.85; animation-delay: 0.92s;"></div><div class="mosaic-tile" style="width: 40px; height: 40px; background: rgb(36, 113, 163); opacity: 0.85; animation-delay: 0.96s;"></div><div class="mosaic-tile" style="width: 32px; height: 56px; background: rgb(142, 68, 173); opacity: 0.85; animation-delay: 1s;"></div><div class="mosaic-tile" style="width: 56px; height: 32px; background: rgb(22, 160, 133); opacity: 0.85; animation-delay: 1.04s;"></div><div class="mosaic-tile" style="width: 44px; height: 44px; background: rgb(107, 79, 158); opacity: 0.85; animation-delay: 1.08s;"></div></div>
   <h1>What Is Your<br><em>Career Mix?</em></h1>
   <p>20 questions. No right answers. Discover your unique blend of Analyst, Creator, Leader, Strategist, Entrepreneur, Innovator, and Specialist.</p>
   <button class="btn-start" onclick="startQuiz()">Take the Quiz →</button>
@@ -827,7 +830,7 @@
 
   <div class="nav-row">
     <button class="btn-nav btn-back" id="btnBack" onclick="goBack()">← Back</button>
-    <button class="btn-nav btn-next" id="btnNext" onclick="goNext()" disabled>Next →</button>
+    <button class="btn-nav btn-next" id="btnNext" onclick="goNext()" disabled="">Next →</button>
   </div>
 </div>
 
@@ -1156,8 +1159,14 @@ function renderQuestion() {
 
 function selectOption(i) {
   answers[currentQ] = i;
-  document.querySelectorAll('.option').forEach((el,idx) => {
-    el.classList.toggle('selected', idx===i);
+  document.querySelectorAll('.option').forEach((el, idx) => {
+    el.classList.remove('selected');
+    if(idx === i) {
+      el.classList.add('selected');
+      // Brief flash via inline style, then let CSS take over
+      el.style.background = 'rgba(231,76,111,0.18)';
+      setTimeout(() => { el.style.background = ''; }, 200);
+    }
   });
   document.getElementById('btnNext').disabled = false;
 
@@ -1704,5 +1713,6 @@ function copyToClipboard(btn, text) {
 buildMosaic();
 checkForSavedProgress();
 </script>
-</body>
-</html>
+
+
+</body></html>
